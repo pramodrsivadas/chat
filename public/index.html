@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+ <html> 
+    <head>
+        <meta charset="utf-8">
+        <title>Test Page</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+                <!--socket.io.js is automatically added by node-->
+                <script src="socket.io/socket.io.js"></script>
+                <!--jQuery Used For Some Frontend Tasks-->
+                <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+                <script>
+                    //Connecting To socket.io
+                    var socket = io.connect(window.location.host);
+                    socket.on("newclientconnect",function(data){
+                        $('#msgs').html((data.description));
+                    })
+                    socket.on("new_message",function(data){
+                        $('#msgs').append('<br />' + data);
+                    })        
+                    function createRoom() {
+                        var validRoom = validateRoom();
+                        if (validRoom == false) {
+                            return false;
+                        }
+                        socket.emit('join_room',$('#email').val());
+                        $('#email').prop('readonly', true);
+                        $('#myName').prop('readonly', true);
+                    }
+                    function sendMessage() {
+                        validateRoom();
+                        if($.trim($('#message').val()) == ''){
+                            alert('Please enter message');
+                            return;
+                        } 
+                        socket.emit('new_message',{'room': $('#email').val(), 
+                        'message': $('#myName').val() + ' says: ' + $('#message').val()});
+                        $('#message').val('');
+                    }
+
+                    function validateRoom() {
+                        if($.trim($('#email').val()) == ''){
+                            alert('Please enter room');
+                            return false;
+                        }   
+                        if($.trim($('#myName').val()) == ''){
+                            alert('Please enter name');
+                            return false;
+                        } 
+                        return true;
+                    }
+                </script>  
+    </head>
+    <body>
+<div id="msgs">hello</div>
+                 Room Id: <input type="text" id="email" value="">
+                 <input type="button" onclick = "createRoom();" name="Go Online" value="Go Online">
+                 Your Name: <input type="text" id="myName" value="">
+
+                 Message <input type="text" id="message" value="">
+                 <input type="button" onclick = "sendMessage();" name="Go" value = "Send">
+    </body>
+</html>
