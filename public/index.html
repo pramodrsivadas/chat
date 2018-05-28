@@ -9,22 +9,31 @@
 
 <!-- Optional theme -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
-
+                <!--jQuery Used For Some Frontend Tasks-->
+                <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
                 <!--socket.io.js is automatically added by node-->
                 <script src="socket.io/socket.io.js"></script>
-                <!--jQuery Used For Some Frontend Tasks-->
-                <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
                 <script>
                     //Connecting To socket.io
                     var socket = io.connect(window.location.host);
                     socket.on("newclientconnect",function(data){
                         $('#msgs').html((data.description));
-                    })
+                    });
                     socket.on("new_message",function(data){
                         $('#msgs').append('<br />' + data);
-                    })        
+                    });   
+                    socket.on("update_user_list",function(connectedUsers){
+                    	count = connectedUsers.userList.length;
+                    	userListHtml = "<ul>";
+                    	for (i = 0; i < count; i++) {
+                    		userListHtml += "<li><a href='#' class='chat-with-user' id='"+connectedUsers.userList[i].id+"'>" + connectedUsers.userList[i].username + "</a></li>";
+                    	}
+                    	userListHtml += "</ul>";
+                        $('#online-users-list').html(userListHtml);
+                    });                     
                     function createRoom() {
                         var validRoom = validateRoom();
                         if (validRoom == false) {
@@ -44,7 +53,15 @@
                         'message': $('#myName').val() + ' says: ' + $('#message').val()});
                         $('#message').val('');
                     }
-
+                    function sendPvtMessage() {
+                        if($.trim($('#pvt-message').val()) == ''){
+                            alert('Please enter message');
+                            return;
+                        } 
+                        socket.emit('new_pvt_message',{'user': $('#message-to-user').val(), 
+                        'message': $('#myName').val() + ' says: ' + $('#message').val()});
+                        $('#message').val('');
+                    }
                     function validateRoom() {
                         if($.trim($('#email').val()) == ''){
                             alert('Please enter room');
@@ -56,20 +73,50 @@
                         } 
                         return true;
                     }
+                    
+                    function storeUser() {
+                        if($.trim($('#username').val()) == ''){
+                            alert('Please enter user name');
+                            return false;
+                        } 
+                        var user = {username : $('#username').val()}
+                        socket.emit('new_user',user);
+                        //$('#username').val('');
+                        return false;
+                    }
+                    $(document).ready(function () {
+	                    $(document).on('click','a.chat-with-user',function(){
+	                    	$('#message-to-user').val($(this).attr('id'))
+	                    });
+                    });
                 </script>  
     </head>
     <body>
     <div class="container-fluid">
+    <input type="text" id="message-to-user" value="">
     <div class="row" id="login-window">
-            <div id='online-users-list' class="col-md-4">online user 1</div>   
-            <div id='online-users-list' class="col-md-8">messagesss</div>
+            <div id='user-frm-wrapper' class="col-md-4">
+            <form id="user-frm" method="get">
+            <label>User Name</label>
+            <input type="text" name="username" id="username" value="">
+            <input type="button" value="login" name="login" id="login" onclick="return storeUser();" >
+            </div>
     </div>         
     <div class="row" id="messenger-window">
-            <div id='online-users-list' class="col-md-4">online user 1</div>   
+            <div id='online-users-list' class="col-md-4">
+            <ul>
+            <li></li>
+            </ul>
+            online user 1
+            </div>   
             <div id='online-users-list' class="col-md-8">messagesss</div>
     </div>    
    
-
+	<div>
+	
+                    Message <input type="text" id="pvt-message" value="">
+                    <input type="button" onclick = "sendPvtMessage();" name="Go" value = "Send">
+	</div>
     <div id="msgs">hello</div>
                     Room Id: <input type="text" id="email" value="">
                     <input type="button" onclick = "createRoom();" name="Go Online" value="Go Online">

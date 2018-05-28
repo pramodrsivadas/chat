@@ -13,10 +13,18 @@ response.write(fs.readFileSync("./public/index.html"));
 
 });
 var connectedUsers = [];
-
+var publicRoom = 'public_room';
 console.log("Server Running At:localhost:"+port);
 var clients = 0;
 io.on('connection',function (socket) {
+	
+    socket.on('new_user', function(userData){
+    	userData.id = socket.id;
+    	connectedUsers.push(userData);
+    	socket.join(publicRoom);
+    	io.to(publicRoom).emit("update_user_list",{ userList: connectedUsers});
+    });	
+   
     socket.on('join_room', function(data){
         socket.join(data);
         console.log(data);
