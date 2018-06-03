@@ -31,9 +31,10 @@ io.on('connection',function (socket) {
         io.to(data).emit("new_message","You Joined room" + data);
 
     });
-    socket.on('new_message', function(data){
+    socket.on('new_pvt_message', function(data){
         console.log('new msg');
-        io.to(data.room).emit("new_message",data.message);
+        socket.broadcast.to(data.to_user).emit("new_pvt_message",data.message);
+        socket.emit("new_pvt_message",data.message);
 
     });
     clients++;

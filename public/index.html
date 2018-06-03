@@ -22,7 +22,7 @@
                     socket.on("newclientconnect",function(data){
                         $('#msgs').html((data.description));
                     });
-                    socket.on("new_message",function(data){
+                    socket.on("new_pvt_message",function(data){
                         $('#msgs').append('<br />' + data);
                     });   
                     socket.on("update_user_list",function(connectedUsers){
@@ -58,9 +58,12 @@
                             alert('Please enter message');
                             return;
                         } 
-                        socket.emit('new_pvt_message',{'user': $('#message-to-user').val(), 
-                        'message': $('#myName').val() + ' says: ' + $('#message').val()});
-                        $('#message').val('');
+                        socket.emit('new_pvt_message',{'to_user': $('#message-to-user').val(), 
+                        'message': $('#username').val() + ' says: ' + $('#pvt-message').val()});
+                        $('#pvt-message').val('');
+                        // socket.emit('new_pvt_message',{'user': $('#message-to-user').val(), 
+                        // 'message': $('#myName').val() + ' says: ' + $('#message').val()});
+                        // $('#message').val('');
                     }
                     function validateRoom() {
                         if($.trim($('#email').val()) == ''){
@@ -109,7 +112,7 @@
             </ul>
             online user 1
             </div>   
-            <div id='online-users-list' class="col-md-8">messagesss</div>
+            <div id='msgs' class="col-md-8">messagesss</div>
     </div>    
    
 	<div>
@@ -117,13 +120,13 @@
                     Message <input type="text" id="pvt-message" value="">
                     <input type="button" onclick = "sendPvtMessage();" name="Go" value = "Send">
 	</div>
-    <div id="msgs">hello</div>
+    <!-- <div id="msgs">hello</div>
                     Room Id: <input type="text" id="email" value="">
                     <input type="button" onclick = "createRoom();" name="Go Online" value="Go Online">
                     Your Name: <input type="text" id="myName" value="">
 
                     Message <input type="text" id="message" value="">
                     <input type="button" onclick = "sendMessage();" name="Go" value = "Send">
-    </div>
+    </div> -->
     </body>
 </html>
