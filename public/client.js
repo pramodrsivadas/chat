@@ -36,7 +36,7 @@ var socket  = io.connect();
 // });
 // Set up touch events for mobile, etc
 canvas.addEventListener("touchstart", function (e) {
-    mousePos = getTouchPos(canvas, e);
+    //mousePos = getTouchPos(canvas, e);
     var touch = e.touches[0];
     var mouseEvent = new MouseEvent("mousedown", {
         clientX: touch.clientX,
