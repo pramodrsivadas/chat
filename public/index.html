@@ -61,22 +61,8 @@
                         socket.emit('new_pvt_message',{'to_user': $('#message-to-user').val(), 
                         'message': $('#username').val() + ' says: ' + $('#pvt-message').val()});
                         $('#pvt-message').val('');
-                        // socket.emit('new_pvt_message',{'user': $('#message-to-user').val(), 
-                        // 'message': $('#myName').val() + ' says: ' + $('#message').val()});
-                        // $('#message').val('');
-                    }
-                    function validateRoom() {
-                        if($.trim($('#email').val()) == ''){
-                            alert('Please enter room');
-                            return false;
-                        }   
-                        if($.trim($('#myName').val()) == ''){
-                            alert('Please enter name');
-                            return false;
-                        } 
-                        return true;
-                    }
-                    
+                     }
+   
                     function storeUser() {
                         if($.trim($('#username').val()) == ''){
                             alert('Please enter user name');

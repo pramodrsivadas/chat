@@ -1,23 +1,36 @@
 var express = require('express');
-var app = express();
 var fs = require('fs');
+var socket = require('socket.io')
 const port = 8080;
-var listener = app.listen(port);
-var io = require('socket.io').listen(listener);
-app.get('/',function(request,response) {
-//Telling Browser That The File Provided Is A HTML File
-response.writeHead(200,{"Content-Type":"text/html"});
-response.write(fs.readFileSync("./public/index.html"));
-  //Ending Response
-  response.end();
 
+var app = express();
+var server = app.listen(port, function(){
+    console.log('listening to port' + port);
 });
+//static files
+app.use(express.static('public'));
+
+//socket setup
+var io = socket(server);
+
 var connectedUsers = [];
+var line_history = [];
+
 var publicRoom = 'public_room';
-console.log("Server Running At:localhost:"+port);
+//console.log("Server Running At:localhost:"+port);
 var clients = 0;
 io.on('connection',function (socket) {
-	
+
+    for (var i in line_history) {
+        socket.emit('draw_line', { line: line_history[i] } );
+     }
+     socket.on('draw_line', function (data) {
+        // add received line to history 
+        line_history.push(data.line);
+        // send line to all clients
+        io.emit('draw_line', { line: data.line });
+     });
+    
     socket.on('new_user', function(userData){
     	userData.id = socket.id;
     	connectedUsers.push(userData);
