@@ -26,6 +26,53 @@ var socket  = io.connect();
     mouse.pos.y = e.clientY / height;
     mouse.move = true;
  };
+//  canvas.addEventListener('onmousedown', function(e){ mouse.click = true; });
+//  canvas.addEventListener('onmouseup', function(e){ mouse.click = false; });
+//  canvas.addEventListener('onmousemove', function(e){ 
+//     // normalize mouse position to range 0.0 - 1.0
+//     mouse.pos.x = e.clientX / width;
+//     mouse.pos.y = e.clientY / height;
+//     mouse.move = true;
+// });
+// Set up touch events for mobile, etc
+canvas.addEventListener("touchstart", function (e) {
+    mousePos = getTouchPos(canvas, e);
+    var touch = e.touches[0];
+    var mouseEvent = new MouseEvent("mousedown", {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+    });
+    canvas.dispatchEvent(mouseEvent);
+}, false);
+canvas.addEventListener("touchend", function (e) {
+    var mouseEvent = new MouseEvent("mouseup", {});
+    canvas.dispatchEvent(mouseEvent);
+}, false);
+canvas.addEventListener("touchmove", function (e) {
+    var touch = e.touches[0];
+    var mouseEvent = new MouseEvent("mousemove", {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+    });
+    canvas.dispatchEvent(mouseEvent);
+}, false);
+// Prevent scrolling when touching the canvas
+document.body.addEventListener("touchstart", function (e) {
+    if (e.target == canvas) {
+        e.preventDefault();
+    }
+}, false);
+document.body.addEventListener("touchend", function (e) {
+    if (e.target == canvas) {
+        e.preventDefault();
+    }
+}, false);
+document.body.addEventListener("touchmove", function (e) {
+    if (e.target == canvas) {
+        e.preventDefault();
+    }
+}, false);
+
 
     socket.on('draw_line', function (data) {
         var line = data.line;
