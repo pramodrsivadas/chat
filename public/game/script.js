@@ -3,10 +3,16 @@ $( document ).ready(function() {
     var c = canvas.getContext('2d');
     var width   = window.innerWidth;
     var height  = window.innerHeight;
-    var radius = 30;
-    var speedX = 1;
-    var speedY = 1;
-    var clickError = 8;
+    if (width > height) {
+        var unit = Math.round(width/height);
+    } else{
+        var unit = Math.round(height/width);
+    }
+ 
+    var radius = unit * 20;
+    var speedX = unit * 2;
+    var speedY = speedX;
+    var clickError = unit * 10;
     var win = false;
 
     canvas.width = width;
@@ -25,24 +31,39 @@ $( document ).ready(function() {
         this.draw = function() {
             c.beginPath();
             c.arc(this.x,this.y,this.r, 0,Math.PI * 2);
-            c.strokeStyle = 'blue';
+            c.fillStyle = 'orange';
+            c.strokeStyle = 'white';
+            c.fill();
             c.stroke();
         };
     }
 
     var x = Math.random() * width;
     var y = Math.random() * height; 
-
+    var x1 = Math.random() * width;
+    var y1 = Math.random() * height; 
     canvas.onmousedown = function(e){ 
         var mousePos = getMousePos(canvas, e);
         var clickedX = Math.abs(x - mousePos.x);
         var clickedY = Math.abs(y - mousePos.y);
 
-        if ((clickedX < radius - clickError) && (clickedY < radius - clickError)) {
+        if ((clickedX < radius + clickError) && (clickedY < radius + clickError)) {
             win = true;
             alert('You Win !. Click again to start playing again');
-            speedX = speedX + 3;
-            speedY = speedY + 3;
+            clickError++;
+            if (speedX < 0) {
+                speedX = speedX - unit;
+            }
+            else {
+                speedX = speedX + unit;
+            }
+            if (speedY < 0) {
+                speedY = speedY - unit;
+            }
+            else {
+                speedY = speedY + unit;
+            }
+
         } else {
             win = false;
         }
@@ -55,7 +76,7 @@ $( document ).ready(function() {
         if (win == false) {
             c.clearRect(0,0,width,height);
             var crcle = new Circle(x, y, radius);
-            crcle.draw();
+            crcle.draw();           
             x = x + speedX;
             if (x >= width - radius || x <= 0 + radius) {
                 speedX = - speedX;
@@ -64,6 +85,7 @@ $( document ).ready(function() {
             if (y >= height - radius || y <= 0 + radius) {
                 speedY = - speedY;
             }
+            //showRunningCircle(x, y, radius);
         }
         requestAnimationFrame(animate);        
     }
