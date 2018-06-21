@@ -32,8 +32,7 @@ $( document ).ready(function() {
 
     var x = Math.random() * width;
     var y = Math.random() * height; 
-    var x = 200;
-    var y = 700;
+
     canvas.onmousedown = function(e){ 
         var mousePos = getMousePos(canvas, e);
         var clickedX = Math.abs(x - mousePos.x);
@@ -42,8 +41,8 @@ $( document ).ready(function() {
         if ((clickedX < radius - clickError) && (clickedY < radius - clickError)) {
             win = true;
             alert('You Win !. Click again to start playing again');
-            speedX++;
-            speedY++;
+            speedX = speedX + 3;
+            speedY = speedY + 3;
         } else {
             win = false;
         }
